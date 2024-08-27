@@ -27,6 +27,12 @@ jobs:
         id: login-ecr
         uses: aws-actions/amazon-ecr-login@v1
 
+      - name: Log Variables
+        run: |
+          echo "ECR_REGISTRY: $ECR_REGISTRY"
+          echo "ECR_REPOSITORY: $ECR_REPOSITORY"
+          echo "IMAGE_TAG: $IMAGE_TAG"
+
       - name: Build, tag, and push image to Amazon ECR # Step to push the image to ECR
         env:
           ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
