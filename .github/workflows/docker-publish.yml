@@ -16,19 +16,31 @@ jobs:
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v2
 
-      - name: Log in to Docker Hub
-        uses: docker/login-action@v2
+      - name: Configure AWS credentials # Step to configure the credentials to deploy the image
+        uses: aws-actions/configure-aws-credentials@v2
         with:
-          username: ${{ secrets.DOCKER_USERNAME }}
-          password: ${{ secrets.DOCKER_PASSWORD }}
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: us-east-1
 
-      - name: Build and tag the Docker image
-        run: |
-          docker build -t express-gen-ts-express-application:latest .
-          docker tag express-gen-ts-express-application:latest vhforbes/express-gen-ts-express-application:${{ github.sha }}
-          docker tag express-gen-ts-express-application:latest vhforbes/express-gen-ts-express-application:latest
+      - name: Login to Amazon ECR
+        id: login-ecr
+        uses: aws-actions/amazon-ecr-login@v1
 
-      - name: Push the Docker image
+      - name: Build, tag, and push image to Amazon ECR # Step to push the image to ECR
+        env:
+          ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
+          ECR_REPOSITORY: ${{ env.REPO_NAME }}
+          IMAGE_TAG: "${{ env.BRANCH_NAME }}-${{ env.GITHUB_HASH }}"
+          GH_TOKEN: ${{ secrets.GH_TOKEN }}
         run: |
-          docker push vhforbes/express-gen-ts-express-application:${{ github.sha }}
-          docker push vhforbes/express-gen-ts-express-application:latest
+          docker build --build-arg GITHUB_TOKEN=$GH_TOKEN -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG .
+          docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
+          echo "IMAGE_NAME=$ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG" >> $GITHUB_ENV
+          echo "IMAGE_TAG=$IMAGE_TAG" >> $GITHUB_ENV
+
+      - name: Pushed image with tag ${{ env.IMAGE_TAG }}
+        run: |
+          echo "Full path: $IMAGE_NAME"
+          echo "Branch: $BRANCH_NAME"
+          echo "Commit hash: $GITHUB_HASH"
