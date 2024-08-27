@@ -29,6 +29,8 @@ jobs:
 
       - name: Log Variables
         run: |
+          echo "REPO NAME: ${{ env.REPO_NAME }}"
+
           echo "ECR_REGISTRY: $ECR_REGISTRY"
           echo "ECR_REPOSITORY: $ECR_REPOSITORY"
           echo "IMAGE_TAG: $IMAGE_TAG"
@@ -40,6 +42,13 @@ jobs:
           IMAGE_TAG: "${{ env.BRANCH_NAME }}-${{ env.GITHUB_HASH }}"
           GH_TOKEN: ${{ secrets.GH_TOKEN }}
         run: |
+          echo "REPO NAME: ${{ env.REPO_NAME }}"
+
+          echo "ECR_REGISTRY: $ECR_REGISTRY"
+          echo "ECR_REPOSITORY: $ECR_REPOSITORY"
+          echo "IMAGE_TAG: $IMAGE_TAG"
+
+
           docker build --build-arg GITHUB_TOKEN=$GH_TOKEN -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG .
           docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
           echo "IMAGE_NAME=$ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG" >> $GITHUB_ENV
