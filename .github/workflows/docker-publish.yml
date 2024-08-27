@@ -46,8 +46,8 @@ jobs:
           echo "ECR_REPOSITORY: $ECR_REPOSITORY"
           echo "IMAGE_TAG: $IMAGE_TAG"
 
-          docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG .
-          docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
+          docker build -t $ECR_REGISTRY/express-app:$IMAGE_TAG .
+          docker push $ECR_REGISTRY/express-app:$IMAGE_TAG
 
       - name: Pushed image with tag ${{ env.IMAGE_TAG }}
         run: |
