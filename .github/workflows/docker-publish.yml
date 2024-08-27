@@ -27,13 +27,13 @@ jobs:
         id: login-ecr
         uses: aws-actions/amazon-ecr-login@v1
 
-      - name: Log Variables
-        run: |
-          echo "REPO NAME: ${{ env.REPO_NAME }}"
+      - name: Get commit hash
+        id: get-commit-hash
+        run: echo "::set-output name=commit-hash::$(git rev-parse --short HEAD)"
 
-          echo "ECR_REGISTRY: $ECR_REGISTRY"
-          echo "ECR_REPOSITORY: $ECR_REPOSITORY"
-          echo "IMAGE_TAG: $IMAGE_TAG"
+      - name: Get timestamp
+        id: get-timestamp
+        run: echo "::set-output name=timestamp::$(date +'%Y-%m-%d-%H-%M')"
 
       - name: Build, tag, and push the image to Amazon ECR
         id: build-image
