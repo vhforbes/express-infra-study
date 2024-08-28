@@ -8,8 +8,6 @@ RUN npm install
 
 COPY . /app
 
-RUN npm run build
-
-CMD ["node", "-r", "module-alias/register", "./dist", "--env=production"]
+CMD ["npm", "run", "start"]
 
 
