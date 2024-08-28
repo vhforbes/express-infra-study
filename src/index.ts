@@ -11,4 +11,4 @@ const SERVER_START_MSG =
 
 console.log(SERVER_START_MSG);
 
-server.listen(EnvVars.Port, () => logger.info(SERVER_START_MSG));
+server.listen(8000, () => logger.info(SERVER_START_MSG));
